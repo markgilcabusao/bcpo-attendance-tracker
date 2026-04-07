@@ -392,21 +392,18 @@ function App() {
       <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white shadow-lg">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-center gap-4">
-            <img
-              src="/pnp_logo_nobg.png"
-              alt="Philippine National Police"
-              className="h-16 md:h-20 object-contain"
-            />
+            {/* Temporarily removed images to fix Vercel deployment rendering issue */}
+            <div className="h-16 md:h-20 flex items-center">
+              <span className="text-sm opacity-70">PNP</span>
+            </div>
             <div className="text-center">
               <h1 className="text-2xl md:text-3xl font-bold tracking-wide">
                 BCPO Attendance Tracker
               </h1>
             </div>
-            <img
-              src="/BCPO_LOGO_nobg.png"
-              alt="BCPO"
-              className="h-16 md:h-20 object-contain"
-            />
+            <div className="h-16 md:h-20 flex items-center">
+              <span className="text-sm opacity-70">BCPO</span>
+            </div>
           </div>
         </div>
       </header>
