@@ -389,23 +389,34 @@ function App() {
       <Toaster position="top-right" richColors />
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white shadow-lg">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-center gap-4">
-            <img
-              src="/pnp_logo_nobg.png"
-              alt="Philippine National Police"
-              className="h-16 md:h-20 object-contain"
-            />
-            <div className="text-center">
-              <h1 className="text-2xl md:text-3xl font-bold tracking-wide">
-                BCPO Attendance Tracker
+     <header className="relative w-full overflow-hidden shadow-lg bg-blue-900">
+      {/* 1. The Building Background - Reduced width to 40% of the header */}
+        <div 
+           className="absolute right-0 top-0 h-full w-[40%] z-0 bg-no-repeat bg-cover bg-right opacity-80"
+           style={{ backgroundImage: "url('/bcpo.png')",}} />
+
+      {/* 2. Adjusted Gradient Overlay */}
+      {/* 'via-50%' ensures the solid color stays solid longer before fading into the image */}
+         <div className="absolute inset-0 z-10 bg-gradient-to-r from-blue-900 via-blue-900/90 via-50% to-blue-900/30"></div>
+
+      {/* 3. Your Original Content Layout */}
+         <div className="relative z-20 container mx-auto px-4 py-6">
+            <div className="flex items-center justify-center gap-4">
+              <img
+                 src="/pnp_logo_nobg.png"
+                 alt="Philippine National Police"
+                 className="h-16 md:h-20 object-contain drop-shadow-md"/>
+          <div className="text-center">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-white drop-shadow-md"> BCPO Attendance Tracker
               </h1>
-            </div>
-            <img src="/BCPO_LOGO_nobg.png" alt="BCPO" className="h-16 md:h-20 object-contain" />
-          </div>
+         </div>
+              <img 
+                src="/BCPO_LOGO_nobg.png" 
+                alt="BCPO" 
+                className="h-16 md:h-20 object-contain drop-shadow-md"/>
+           </div>
         </div>
-      </header>
+    </header>
 
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Stats Cards */}
@@ -790,7 +801,7 @@ function App() {
           <div className="flex items-center justify-center gap-6 flex-wrap">
             <span className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
-              BCPS-1
+               Malvar Circle, Holy Redeemer, Butuan City
             </span>
             <span className="flex items-center gap-1">
               <Phone className="w-4 h-4" />
