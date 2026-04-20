@@ -3,6 +3,112 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  min-height: 100vh;
+  position: relative;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Police Emergency Lights Background */
+body {
+  background: url('/rawImage.png') center/cover fixed no-repeat;
+  background-color: #0a0e27;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Smooth overlay gradient for better readability */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 14, 39, 0.35) 0%,
+    rgba(15, 25, 50, 0.3) 25%,
+    rgba(20, 30, 60, 0.25) 50%,
+    rgba(10, 20, 45, 0.3) 75%,
+    rgba(5, 10, 35, 0.35) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: overlayShift 10s ease-in-out infinite;
+}
+
+@keyframes overlayShift {
+  0%, 100% {
+    background: linear-gradient(
+      135deg,
+      rgba(10, 14, 39, 0.35) 0%,
+      rgba(15, 25, 50, 0.3) 25%,
+      rgba(20, 30, 60, 0.25) 50%,
+      rgba(10, 20, 45, 0.3) 75%,
+      rgba(5, 10, 35, 0.35) 100%
+    );
+  }
+  50% {
+    background: linear-gradient(
+      135deg,
+      rgba(10, 14, 39, 0.3) 0%,
+      rgba(15, 25, 50, 0.25) 25%,
+      rgba(20, 30, 60, 0.2) 50%,
+      rgba(10, 20, 45, 0.25) 75%,
+      rgba(5, 10, 35, 0.3) 100%
+    );
+  }
+}
+
+/* Secondary overlay for subtle light effects */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse 600px 400px at 20% 35%, rgba(255, 100, 0, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse 500px 350px at 75% 50%, rgba(0, 100, 255, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse 400px 300px at 50% 80%, rgba(255, 0, 0, 0.01) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  animation: lightEffects 8s ease-in-out infinite;
+}
+
+@keyframes lightEffects {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Vignette effect on edges */
+body .vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .logo {
@@ -11,9 +117,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -39,4 +147,271 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Floating Label Animations - SUPER VERSION */
+.floating-label-wrapper {
+  position: relative;
+  margin-bottom: 0.25rem;
+}
+
+.floating-input {
+  padding-top: 0.75rem;
+  padding-bottom: 0.25rem;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-label {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  transform: translateY(-50%);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #9ca3af;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: left center;
+  white-space: nowrap;
+}
+
+.floating-input:focus ~ .floating-label,
+.floating-input:not(:placeholder-shown) ~ .floating-label {
+  top: -8px;
+  font-size: 0.7rem;
+  color: #1e40af;
+  font-weight: 700;
+  background: white;
+  padding: 0 0.35rem;
+  letter-spacing: 0.3px;
+  transform: translateY(0) scale(0.95);
+}
+
+.floating-input::placeholder {
+  color: transparent;
+}
+
+.floating-input:focus::placeholder {
+  color: #e5e7eb;
+}
+
+.floating-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Search Box Enhancement */
+.search-wrapper {
+  position: relative;
+}
+
+.search-input {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 255, 0.9) 100%);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.search-input:focus {
+  background: white;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 0 15px rgba(59, 130, 246, 0.2);
+  transform: scale(1.02);
+}
+
+.search-icon {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: searchPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes searchPulse {
+  0%, 100% {
+    color: #d1d5db;
+    filter: drop-shadow(0 0 0px rgba(59, 130, 246, 0));
+    transform: scale(1);
+  }
+  50% {
+    color: #9ca3af;
+    filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.3));
+  }
+}
+
+@keyframes searchGlow {
+  0%, 100% {
+    color: #3b82f6;
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.6)) drop-shadow(0 0 12px rgba(59, 130, 246, 0.3));
+    transform: scale(1.15) translateY(-50%);
+  }
+  50% {
+    color: #2563eb;
+    filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
+    transform: scale(1.25) translateY(-50%);
+  }
+}
+
+@keyframes searchRotate {
+  0% {
+    transform: scale(1.15) translateY(-50%) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.25) translateY(-50%) rotate(15deg);
+  }
+  100% {
+    transform: scale(1.15) translateY(-50%) rotate(0deg);
+  }
+}
+
+.search-input:focus ~ .search-icon,
+.search-input:not(:placeholder-shown) ~ .search-icon {
+  color: #3b82f6;
+  left: 0.75rem;
+  animation: searchGlow 1.2s ease-in-out infinite, searchRotate 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+}
+
+.search-input::placeholder {
+  color: #d1d5db;
+}
+
+.search-input:focus::placeholder {
+  color: #9ca3af;
+}
+
+/* Calendar Enhancement */
+.calendar-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #ffffff 100%);
+  position: relative;
+  border-radius: 0.5rem;
+}
+
+.calendar-content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%);
+  opacity: 0.02;
+  border-radius: 0.5rem;
+  pointer-events: none;
+}
+
+.calendar-content button {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 255, 0.6) 100%);
+  position: relative;
+  overflow: hidden;
+  animation: calendarCellFadeIn 0.5s ease-out backwards;
+}
+
+/* Stagger animation for each calendar cell */
+.calendar-content button:nth-child(1) { animation-delay: 0.05s; }
+.calendar-content button:nth-child(2) { animation-delay: 0.1s; }
+.calendar-content button:nth-child(3) { animation-delay: 0.15s; }
+.calendar-content button:nth-child(4) { animation-delay: 0.2s; }
+.calendar-content button:nth-child(5) { animation-delay: 0.25s; }
+.calendar-content button:nth-child(6) { animation-delay: 0.3s; }
+.calendar-content button:nth-child(7) { animation-delay: 0.35s; }
+.calendar-content button:nth-child(8) { animation-delay: 0.4s; }
+.calendar-content button:nth-child(9) { animation-delay: 0.45s; }
+.calendar-content button:nth-child(10) { animation-delay: 0.5s; }
+.calendar-content button:nth-child(11) { animation-delay: 0.55s; }
+.calendar-content button:nth-child(12) { animation-delay: 0.6s; }
+.calendar-content button:nth-child(13) { animation-delay: 0.65s; }
+.calendar-content button:nth-child(14) { animation-delay: 0.7s; }
+.calendar-content button:nth-child(15) { animation-delay: 0.75s; }
+.calendar-content button:nth-child(16) { animation-delay: 0.8s; }
+.calendar-content button:nth-child(17) { animation-delay: 0.85s; }
+.calendar-content button:nth-child(18) { animation-delay: 0.9s; }
+.calendar-content button:nth-child(19) { animation-delay: 0.95s; }
+.calendar-content button:nth-child(20) { animation-delay: 1s; }
+.calendar-content button:nth-child(21) { animation-delay: 1.05s; }
+.calendar-content button:nth-child(22) { animation-delay: 1.1s; }
+.calendar-content button:nth-child(23) { animation-delay: 1.15s; }
+.calendar-content button:nth-child(24) { animation-delay: 1.2s; }
+.calendar-content button:nth-child(25) { animation-delay: 1.25s; }
+.calendar-content button:nth-child(26) { animation-delay: 1.3s; }
+.calendar-content button:nth-child(27) { animation-delay: 1.35s; }
+.calendar-content button:nth-child(28) { animation-delay: 1.4s; }
+.calendar-content button:nth-child(29) { animation-delay: 1.45s; }
+.calendar-content button:nth-child(30) { animation-delay: 1.5s; }
+.calendar-content button:nth-child(31) { animation-delay: 1.55s; }
+.calendar-content button:nth-child(32) { animation-delay: 1.6s; }
+
+@keyframes calendarCellFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cellGlow {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.35), 0 0 20px rgba(59, 130, 246, 0.15);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Calendar Grid Animation */
+.calendar-content > div:first-child {
+  animation: slideDown 0.6s ease-out;
+}
+
+/* Legend Animation */
+.calendar-content > div:last-child {
+  animation: slideUp 0.6s ease-out delay;
+}
+
+.calendar-content button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.calendar-content button:hover::before {
+  opacity: 1;
+}
+
+.calendar-content button:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25), 0 0 15px rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 255, 0.9) 100%);
+  animation: cellGlow 1.5s ease-in-out infinite;
+}
+
+.calendar-content button[class*='ring'] {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 255, 0.9) 100%);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 4px 12px rgba(59, 130, 246, 0.2);
 }

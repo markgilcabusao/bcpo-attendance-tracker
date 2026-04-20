@@ -385,60 +385,71 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen relative overflow-hidden">
       <Toaster position="top-right" richColors />
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white shadow-lg">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-center gap-4">
-            <img
-              src="/pnp_logo_nobg.png"
-              alt="Philippine National Police"
-              className="h-16 md:h-20 object-contain"
-            />
-            <div className="text-center">
-              <h1 className="text-2xl md:text-3xl font-bold tracking-wide">
-                BCPO Attendance Tracker
-              </h1>
-            </div>
-            <img src="/BCPO_LOGO_nobg.png" alt="BCPO" className="h-16 md:h-20 object-contain" />
-          </div>
-        </div>
-      </header>
+      <header className="relative w-full overflow-hidden shadow-lg bg-blue-900">
+      {/* 1. The Building Background - Reduced width to 40% of the header */}
+        <div 
+           className="absolute right-0 top-0 h-full w-[30%] z-0 bg-no-repeat bg-cover bg-right opacity-80"
+           style={{ backgroundImage: "url('/screenshots/2d5b1f5a-4211-4f1e-b114-bb9fa943f1c0-removebg-preview.png')",}} />
 
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* 2. Adjusted Gradient Overlay */}
+      {/* 'via-50%' ensures the solid color stays solid longer before fading into the image */}
+         <div className="absolute inset-0 z-10 bg-gradient-to-r from-blue-900 via-blue-900/90 via-50% to-blue-900/30"></div>
+
+      {/* 3. Your Original Content Layout */}
+         <div className="relative z-20 container mx-auto px-4 py-6">
+            <div className="flex items-center justify-center gap-4">
+              <img
+                 src="/pnp_logo_nobg.png"
+                 alt="Philippine National Police"
+                 className="h-16 md:h-20 object-contain drop-shadow-md"/>
+          <div className="text-center">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-white drop-shadow-md"> BCPO Attendance Tracker
+              </h1>
+         </div>
+              <img 
+                src="/BCPO_LOGO_nobg.png" 
+                alt="BCPO" 
+                className="h-16 md:h-20 object-contain drop-shadow-md"/>
+           </div>
+        </div>
+    </header>
+
+      <main className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-lg">
+          <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">
             <CardContent className="p-6 flex items-center justify-between">
               <div>
                 <p className="text-green-100 text-sm font-medium">ON DUTY NOW</p>
                 <p className="text-4xl font-bold">{onDutyOfficers.length}</p>
               </div>
-              <div className="bg-white/20 p-4 rounded-full">
+              <div className="bg-white/20 p-4 rounded-full backdrop-blur-sm">
                 <UserCheck className="w-8 h-8" />
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 shadow-lg">
+          <Card className="bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">
             <CardContent className="p-6 flex items-center justify-between">
               <div>
                 <p className="text-gray-100 text-sm font-medium">OFF DUTY</p>
                 <p className="text-4xl font-bold">{offDutyOfficers.length}</p>
               </div>
-              <div className="bg-white/20 p-4 rounded-full">
+              <div className="bg-white/20 p-4 rounded-full backdrop-blur-sm">
                 <UserX className="w-8 h-8" />
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg">
+          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">
             <CardContent className="p-6 flex items-center justify-between">
               <div>
                 <p className="text-blue-100 text-sm font-medium">TOTAL OFFICERS</p>
                 <p className="text-4xl font-bold">{officers.length}</p>
               </div>
-              <div className="bg-white/20 p-4 rounded-full">
+              <div className="bg-white/20 p-4 rounded-full backdrop-blur-sm">
                 <Users className="w-8 h-8" />
               </div>
             </CardContent>
@@ -449,19 +460,19 @@ function App() {
           {/* Left Column - Officer Management */}
           <div className="space-y-6">
             {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <div className="relative search-wrapper">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 search-icon transition-all duration-300" />
               <Input
                 placeholder="Search officers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 border-gray-200 h-9 text-sm"
+                className="pl-9 border-2 border-gray-200 h-10 text-sm search-input focus:border-blue-500 focus:outline-none transition-all duration-300"
               />
             </div>
 
             {/* Add Officer Card */}
-            <Card className="border-2 border-blue-100 shadow-xl bg-white/80 backdrop-blur">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 py-3">
+            <Card className="border-2 border-blue-200/50 shadow-2xl bg-white/80 backdrop-blur-xl hover:shadow-3xl transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50 py-3 backdrop-blur-sm">
                 <CardTitle className="flex items-center gap-2 text-blue-900 text-base">
                   <UserPlus className="w-4 h-4" />
                   Register New Officer
@@ -510,10 +521,10 @@ function App() {
                   <Button
                     onClick={handleAddOfficer}
                     size="sm"
-                    className="bg-blue-700 hover:bg-blue-800 text-white"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 border-0 rounded-lg px-4 py-2"
                     disabled={loading}
                   >
-                    <UserPlus className="w-4 h-4 mr-1" />
+                    <UserPlus className="w-4 h-4 mr-2" />
                     Register
                   </Button>
                 </div>
@@ -521,21 +532,21 @@ function App() {
             </Card>
 
             {/* Officer List */}
-            <Card className="border-2 border-gray-100 shadow-xl bg-white/80 backdrop-blur">
-              <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b border-gray-100 py-3">
-                <CardTitle className="flex items-center gap-2 text-gray-700 text-base">
+            <Card className="border-2 border-blue-200/50 shadow-2xl bg-white/80 backdrop-blur-xl hover:shadow-3xl transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50 py-3 backdrop-blur-sm">
+                <CardTitle className="flex items-center gap-2 text-blue-900 text-base">
                   <Users className="w-4 h-4" />
                   Officers List
-                  <Badge variant="secondary" className="ml-2 text-xs">
+                  <Badge className="ml-2 text-xs bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-green-500/50 font-bold px-2.5 py-1 rounded-full">
                     {filteredOfficers.length}
                   </Badge>
                   {/* Realtime Status Indicator */}
                   <span
-                    className={`ml-auto w-2 h-2 rounded-full ${
+                    className={`ml-auto w-3 h-3 rounded-full animate-pulse ${
                       realtimeStatus === 'connected'
-                        ? 'bg-green-500 animate-pulse'
+                        ? 'bg-green-500 shadow-lg shadow-green-500/50'
                         : realtimeStatus === 'reconnecting'
-                          ? 'bg-yellow-500 animate-pulse'
+                          ? 'bg-yellow-500 shadow-lg shadow-yellow-500/50'
                           : 'bg-gray-400'
                     }`}
                     title={`Realtime: ${realtimeStatus}`}
@@ -574,7 +585,7 @@ function App() {
                               <Button
                                 size="sm"
                                 onClick={() => handleOnDuty(officer.id)}
-                                className="bg-green-600 hover:bg-green-700 text-white h-7 px-2 text-xs"
+                                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white h-7 px-3 text-xs font-semibold shadow-lg hover:shadow-green-500/50 hover:scale-105 transform transition-all duration-300 border-0 rounded"
                               >
                                 <UserCheck className="w-3 h-3 mr-1" />
                                 On
@@ -585,7 +596,7 @@ function App() {
                                   size="sm"
                                   onClick={() => handleOffDuty(officer.id)}
                                   variant="outline"
-                                  className="border-orange-400 text-orange-600 hover:bg-orange-50 h-7 px-2 text-xs"
+                                  className="bg-gradient-to-r from-slate-600 to-slate-700 text-white hover:from-slate-500 hover:to-slate-600 border-0 h-7 px-3 text-xs font-semibold shadow-lg hover:shadow-slate-500/50 hover:scale-105 transform transition-all duration-300 rounded"
                                 >
                                   <UserX className="w-3 h-3 mr-1" />
                                   Off
@@ -606,7 +617,7 @@ function App() {
                               size="sm"
                               variant="ghost"
                               onClick={() => handleEdit(officer)}
-                              className="text-blue-600 hover:bg-blue-50 h-7 w-7 p-0"
+                              className="text-blue-600 hover:bg-blue-100 hover:text-blue-700 h-7 w-7 p-0 rounded-full hover:scale-110 transform transition-all duration-300 shadow-md hover:shadow-lg"
                             >
                               <Edit2 className="w-3 h-3" />
                             </Button>
@@ -614,7 +625,7 @@ function App() {
                               size="sm"
                               variant="ghost"
                               onClick={() => handleDelete(officer.id)}
-                              className="text-red-600 hover:bg-red-50 h-7 w-7 p-0"
+                              className="text-red-600 hover:bg-red-100 hover:text-red-700 h-7 w-7 p-0 rounded-full hover:scale-110 transform transition-all duration-300 shadow-md hover:shadow-lg"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
@@ -631,8 +642,8 @@ function App() {
           {/* Right Column - Calendar & Scheduled Tasks */}
           <div className="space-y-6">
             {/* Duty Calendar with Scheduled Off-Duty */}
-            <Card className="border-2 border-blue-100 shadow-xl bg-white/80 backdrop-blur">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+            <Card className="border-2 border-blue-200/50 shadow-2xl bg-white/80 backdrop-blur-xl hover:shadow-3xl transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50 backdrop-blur-sm">
                 <CardTitle className="flex items-center justify-between text-blue-900">
                   <div className="flex items-center gap-2">
                     <CalendarDays className="w-5 h-5" />
@@ -645,7 +656,7 @@ function App() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-orange-400 text-orange-600 hover:bg-orange-50 h-8 px-2 text-xs"
+                            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600 border-0 h-8 px-3 text-xs font-semibold shadow-lg hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 rounded"
                             title="Schedule off-duty for all on-duty officers"
                           >
                             <Timer className="w-3 h-3 mr-1" />
@@ -689,7 +700,7 @@ function App() {
 
                             <Button
                               onClick={handleScheduleAllOffDuty}
-                              className="w-full bg-orange-500 hover:bg-orange-600"
+                              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 border-0 rounded-lg"
                             >
                               <Timer className="w-4 h-4 mr-2" />
                               Schedule All Off-Duty
@@ -707,23 +718,61 @@ function App() {
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-6 bg-gradient-to-br from-blue-50/60 via-white/80 to-blue-50/40 relative overflow-hidden calendar-content">
+                {/* Animated backdrop gradient elements */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-200/10 to-transparent rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-blue-200/5 to-transparent rounded-full blur-3xl -ml-40 -mb-40 pointer-events-none"></div>
+                <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, #3b82f6 1px, transparent 1px)', backgroundSize: '40px 40px'}}></div>
+                <div className="relative z-10">
                 {/* Calendar Header */}
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-center mb-4 relative">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                    className="absolute left-0"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  <h3 className="text-lg font-semibold text-blue-900">
-                    {format(currentMonth, 'MMMM yyyy')}
-                  </h3>
+                  <div className="flex items-center justify-center gap-3">
+                    <h3 className="text-lg font-semibold text-blue-900">
+                      {format(currentMonth, 'MMMM yyyy')}
+                    </h3>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          size="sm"
+                          className="bg-gradient-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-600/40 transition-all duration-300 p-2 rounded-lg"
+                          title="Select Date"
+                        >
+                          <CalendarIcon className="w-5 h-5" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 bg-white/90 backdrop-blur-xl border-white/30 shadow-2xl" align="center">
+                        <div className="space-y-3">
+                          <label className="text-sm font-semibold text-gray-700">Select Date</label>
+                          <input
+                            type="date"
+                            value={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
+                            onChange={(e) => {
+                              const date = new Date(e.target.value)
+                              setSelectedDate(date)
+                              setCurrentMonth(date)
+                            }}
+                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:outline-none focus:border-blue-600 text-sm"
+                          />
+                          <div className="text-xs text-gray-600 text-center pt-2">
+                            {selectedDate ? format(selectedDate, 'MM/dd/yyyy') : format(new Date(), 'MM/dd/yyyy')}
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                    className="absolute right-0"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -731,8 +780,8 @@ function App() {
 
                 {/* Week Days Header */}
                 <div className="grid grid-cols-7 gap-1 mb-2">
-                  {weekDays.map((day) => (
-                    <div key={day} className="text-center text-sm font-semibold text-gray-600 py-2">
+                  {weekDays.map((day, idx) => (
+                    <div key={day} className={`text-center text-sm font-semibold py-2 uppercase tracking-wide ${idx === 0 ? 'text-red-600' : 'text-blue-900'}`}>
                       {day}
                     </div>
                   ))}
@@ -743,6 +792,7 @@ function App() {
                   {calendarDays.map((day, idx) => {
                     const isCurrentMonth = isSameMonth(day, currentMonth)
                     const isToday = isSameDay(day, new Date())
+                    const isSunday = idx % 7 === 0
                     const officersOnDuty = getOfficersOnDutyForDate(day)
                     const hasOfficers = officersOnDuty.length > 0
 
@@ -752,12 +802,12 @@ function App() {
                         onClick={() => handleDateClick(day)}
                         className={`
                             aspect-square p-2 rounded-lg border transition-all hover:scale-105
-                            ${isCurrentMonth ? 'bg-white' : 'bg-gray-50 text-gray-400'}
-                            ${isToday ? 'ring-2 ring-blue-500 border-blue-500' : 'border-gray-200'}
-                            ${hasOfficers ? 'hover:bg-green-50 hover:border-green-300' : 'hover:bg-blue-50 hover:border-blue-300'}
+                            ${isSunday ? 'bg-white text-red-500 border-red-300/50' : (isCurrentMonth ? 'bg-white text-gray-900' : 'bg-gray-50 text-gray-400')}
+                            ${isToday ? 'ring-2 ring-blue-500 border-blue-500' : isSunday ? 'border-red-300/30' : 'border-gray-200'}
+                            ${hasOfficers ? 'hover:bg-green-100 hover:border-green-300' : isSunday ? 'hover:bg-red-50 hover:border-red-300' : 'hover:bg-blue-50 hover:border-blue-300'}
                           `}
                       >
-                        <div className="text-sm font-medium">{format(day, 'd')}</div>
+                        <div className={`text-sm font-medium ${isSunday ? 'text-red-600 font-bold' : 'text-gray-900'}`}>{format(day, 'd')}</div>
                         {hasOfficers && (
                           <div className="mt-1">
                             <Badge className="bg-green-500 text-white text-xs px-1.5 py-0">
@@ -779,6 +829,7 @@ function App() {
                     <div className="w-3 h-3 border-2 border-blue-500 rounded-full"></div>
                     <span>Today</span>
                   </div>
+                </div>
                 </div>
               </CardContent>
             </Card>
@@ -806,7 +857,7 @@ function App() {
 
       {/* Day Details Dialog */}
       <Dialog open={dayDetailsOpen} onOpenChange={setDayDetailsOpen}>
-        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto bg-white/90 backdrop-blur-xl border-white/30 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CalendarDays className="w-5 h-5" />
@@ -814,7 +865,7 @@ function App() {
               <Button
                 size="sm"
                 variant="outline"
-                className="ml-auto h-8"
+                className="ml-auto h-8 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white border-0 font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300"
                 onClick={() => {
                   setDayDetailsOpen(false)
                   setAssignDialogOpen(true)
@@ -932,7 +983,7 @@ function App() {
 
       {/* Assign Duty Dialog */}
       <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white/90 backdrop-blur-xl border-white/30 shadow-2xl">
           <DialogHeader>
             <DialogTitle>Assign Officer to Duty</DialogTitle>
             <DialogDescription>
@@ -988,6 +1039,7 @@ function App() {
                 }
               }}
               disabled={!selectedOfficerId || loading}
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Assign Duty
             </Button>
@@ -997,7 +1049,7 @@ function App() {
 
       {/* Edit Dialog */}
       <Dialog open={!!editingOfficer} onOpenChange={() => setEditingOfficer(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white/90 backdrop-blur-xl border-white/30 shadow-2xl">
           <DialogHeader>
             <DialogTitle>Edit Officer Information</DialogTitle>
             <DialogDescription>Update the officer's details below.</DialogDescription>
@@ -1040,7 +1092,11 @@ function App() {
             <Button variant="outline" onClick={() => setEditingOfficer(null)}>
               Cancel
             </Button>
-            <Button onClick={saveEdit} className="bg-blue-700 hover:bg-blue-800" disabled={loading}>
+            <Button 
+              onClick={saveEdit} 
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 border-0 disabled:opacity-50 disabled:cursor-not-allowed" 
+              disabled={loading}
+            >
               Save Changes
             </Button>
           </DialogFooter>
@@ -1052,7 +1108,7 @@ function App() {
         open={deleteDutyDialog.open}
         onOpenChange={() => setDeleteDutyDialog({ ...deleteDutyDialog, open: false })}
       >
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white/90 backdrop-blur-xl border-white/30 shadow-2xl">
           <DialogHeader>
             <DialogTitle>Confirm Remove Duty Record</DialogTitle>
             <DialogDescription>
@@ -1078,6 +1134,7 @@ function App() {
                 }
               }}
               disabled={loading}
+              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-red-500/50 hover:scale-105 transform transition-all duration-300 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Remove Record
             </Button>
@@ -1087,7 +1144,7 @@ function App() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white/90 backdrop-blur-xl border-white/30 shadow-2xl">
           <DialogHeader>
             <DialogTitle>Confirm Remove</DialogTitle>
             <DialogDescription>
@@ -1098,7 +1155,12 @@ function App() {
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={confirmDelete} disabled={loading}>
+            <Button 
+              variant="destructive" 
+              onClick={confirmDelete} 
+              disabled={loading}
+              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-red-500/50 hover:scale-105 transform transition-all duration-300 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Remove
             </Button>
           </DialogFooter>

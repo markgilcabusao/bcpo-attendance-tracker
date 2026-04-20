@@ -151,8 +151,8 @@ export function ScheduleOffDutyButton({
           size={compact ? 'sm' : 'default'}
           variant="outline"
           className={`
-            ${compact ? 'h-7 px-2 text-xs' : ''}
-            border-blue-400 text-blue-600 hover:bg-blue-50
+            ${compact ? 'h-7 px-3 text-xs' : ''}
+            bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600 border-0 font-semibold shadow-lg hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 rounded
           `}
           title="Schedule off-duty for tomorrow"
         >
@@ -174,7 +174,7 @@ export function ScheduleOffDutyButton({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                className="h-6 w-6 p-0 text-red-500 hover:text-red-600 hover:bg-red-100 rounded-full hover:scale-110 transform transition-all duration-300 shadow-md"
                 onClick={handleCancel}
                 title="Cancel scheduled off-duty"
               >
@@ -238,7 +238,7 @@ export function ScheduleOffDutyButton({
           {!scheduledTask && (
             <Button
               onClick={handleSchedule}
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 border-0"
             >
               <Clock className="w-4 h-4 mr-2" />
               Schedule Off-Duty
