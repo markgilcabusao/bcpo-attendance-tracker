@@ -36,9 +36,15 @@ import {
   CalendarDays,
   Clock,
   Timer,
+  Download,
+  Lock,
+  LogOut,
+  Eye,
+  EyeOff,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Toaster } from '@/components/ui/sonner'
+import * as XLSX from 'xlsx'
 import {
   format,
   startOfMonth,
@@ -103,6 +109,12 @@ function App() {
     { open: false, dutyRecordId: '' },
   )
 
+  // Permission state
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [passwordInput, setPasswordInput] = useState('')
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+
   // Calendar state
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -119,6 +131,28 @@ function App() {
   useEffect(() => {
     refreshData()
   }, [refreshData])
+
+  // Handle password authentication
+  const handlePasswordSubmit = () => {
+    if (passwordInput === 'bcpo') {
+      setIsAuthenticated(true)
+      setShowPasswordDialog(false)
+      setPasswordInput('')
+      toast.success('Access granted')
+    } else {
+      toast.error('Incorrect password')
+      setPasswordInput('')
+    }
+  }
+
+  const handleLogout = () => {
+    setIsAuthenticated(false)
+    setName('')
+    setRank('')
+    setBadgeNumber('')
+    setUnit('')
+    toast.success('Logged out')
+  }
 
   // Handle add officer
   const handleAddOfficer = async () => {
@@ -352,37 +386,135 @@ function App() {
     return `${hour12}:${minutes.toString().padStart(2, '0')} ${ampm}`
   }
 
-  // Get countdown for a scheduled task
-  const getCountdown = (scheduledTime: string) => {
-    const now = new Date()
-    const scheduled = new Date(scheduledTime)
-    const diff = scheduled.getTime() - now.getTime()
+   // Get countdown for a scheduled task
+   const getCountdown = (scheduledTime: string) => {
+     const now = new Date()
+     const scheduled = new Date(scheduledTime)
+     const diff = scheduled.getTime() - now.getTime()
 
-    if (diff <= 0) {
-      return {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-        totalMilliseconds: 0,
-        isExpired: true,
-      }
-    }
+     if (diff <= 0) {
+       return {
+         days: 0,
+         hours: 0,
+         minutes: 0,
+         seconds: 0,
+         totalMilliseconds: 0,
+         isExpired: true,
+       }
+     }
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+     const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+     const seconds = Math.floor((diff % (1000 * 60)) / 1000)
 
-    return {
-      days,
-      hours,
-      minutes,
-      seconds,
-      totalMilliseconds: diff,
-      isExpired: false,
-    }
-  }
+     return {
+       days,
+       hours,
+       minutes,
+       seconds,
+       totalMilliseconds: diff,
+       isExpired: false,
+     }
+   }
+
+   // Export officers to Excel
+   const exportToExcel = () => {
+     // Helper to convert UTC time to PHT (UTC+8)
+     const convertToPHT = (utcTime?: string | null) => {
+       if (!utcTime) return ''
+       const [hours, minutes, seconds] = utcTime.split(':').map(Number)
+       let phtHours = (hours + 8) % 24
+       const ampm = phtHours >= 12 ? 'PM' : 'AM'
+       phtHours = phtHours % 12 || 12
+       return `${phtHours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`
+     }
+
+     // Helper to format date
+     const formatDate = (dateStr: string) => {
+       const date = new Date(dateStr)
+       return format(date, 'MMM dd, yyyy')
+     }
+
+     // Sheet 1: Officers
+     const officersData = officers.map((officer) => ({
+       Name: officer.name,
+       Rank: officer.rank,
+       'Badge Number': officer.badgeNumber || '',
+       Unit: officer.unit,
+       Status: officer.currentStatus === 'on-duty' ? 'On Duty' : 'Off Duty',
+       'Duty Records Count': officer.dutyHistory.length,
+     }))
+
+     // Sheet 2: Duty History (all check-ins/check-outs)
+     const dutyHistoryData: any[] = []
+     officers.forEach((officer) => {
+       officer.dutyHistory.forEach((record) => {
+         dutyHistoryData.push({
+           'Officer Name': officer.name,
+           Rank: officer.rank,
+           'Badge Number': officer.badgeNumber || '',
+           Unit: officer.unit,
+           Date: formatDate(record.date),
+           'Time In (PHT)': convertToPHT(record.timeIn),
+           'Time Out (PHT)': convertToPHT(record.timeOut),
+           Duration: record.timeOut 
+             ? `${Math.floor((new Date(`2000-01-01T${record.timeOut}`).getTime() - new Date(`2000-01-01T${record.timeIn}`).getTime()) / (1000 * 60 * 60))}h ${Math.floor(((new Date(`2000-01-01T${record.timeOut}`).getTime() - new Date(`2000-01-01T${record.timeIn}`).getTime()) % (1000 * 60 * 60)) / (1000 * 60))}m`
+             : 'Ongoing',
+         })
+       })
+     })
+
+     // Sheet 3: Statistics Summary
+     const today = format(new Date(), 'yyyy-MM-dd')
+     const todayOnDuty = officers.filter((o) => o.currentStatus === 'on-duty').length
+     const todayRecords = dutyHistoryData.filter((r) => r.Date === formatDate(today)).length
+
+     const summaryData = [
+       { Metric: 'Total Officers', Value: officers.length },
+       { Metric: 'Currently On Duty', Value: todayOnDuty },
+       { Metric: 'Currently Off Duty', Value: officers.length - todayOnDuty },
+       { Metric: 'Total Duty Records', Value: dutyHistoryData.length },
+       { Metric: "Today's Duty Sessions", Value: todayRecords },
+       { Metric: 'Export Date', Value: format(new Date(), 'MMM dd, yyyy HH:mm:ss') },
+     ]
+
+     // Create workbook
+     const workbook = XLSX.utils.book_new()
+
+     const wsOfficers = XLSX.utils.json_to_sheet(officersData)
+     XLSX.utils.book_append_sheet(workbook, wsOfficers, 'Officers')
+
+     const wsDutyHistory = XLSX.utils.json_to_sheet(dutyHistoryData)
+     XLSX.utils.book_append_sheet(workbook, wsDutyHistory, 'Duty History')
+
+     const wsSummary = XLSX.utils.json_to_sheet(summaryData)
+     XLSX.utils.book_append_sheet(workbook, wsSummary, 'Summary')
+
+     // Auto-set column widths
+     wsOfficers['!cols'] = [
+       { wch: 25 }, // Name
+       { wch: 12 }, // Rank
+       { wch: 14 }, // Badge Number
+       { wch: 15 }, // Unit
+       { wch: 12 }, // Status
+       { wch: 18 }, // Duty Records Count
+     ]
+
+     wsDutyHistory['!cols'] = [
+       { wch: 20 }, // Officer Name
+       { wch: 10 }, // Rank
+       { wch: 14 }, // Badge Number
+       { wch: 15 }, // Unit
+       { wch: 12 }, // Date
+       { wch: 16 }, // Time In
+       { wch: 16 }, // Time Out
+       { wch: 12 }, // Duration
+     ]
+
+     XLSX.writeFile(workbook, `BCPO_Attendance_Report_${format(new Date(), 'yyyy-MM-dd')}.xlsx`)
+     toast.success('Exported complete attendance report to Excel')
+   }
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -443,17 +575,37 @@ function App() {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">
-            <CardContent className="p-6 flex items-center justify-between">
-              <div>
-                <p className="text-blue-100 text-sm font-medium">TOTAL OFFICERS</p>
-                <p className="text-4xl font-bold">{officers.length}</p>
-              </div>
-              <div className="bg-white/20 p-4 rounded-full backdrop-blur-sm">
-                <Users className="w-8 h-8" />
-              </div>
-            </CardContent>
-          </Card>
+            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">
+              <CardHeader className="py-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Users className="w-4 h-4" />
+                    TOTAL OFFICERS
+                  </CardTitle>
+                  <Button
+                   size="sm"
+                   variant="outline"
+                   onClick={exportToExcel}
+                   className="bg-green-500 hover:bg-green-600 text-white border-green-500 h-8 px-3 text-xs font-semibold shadow-lg hover:shadow-xl backdrop-blur-sm"
+                   title="Export officers to Excel"
+                 >
+                   <Download className="w-3 h-3 mr-1" />
+                   Download Excel
+                 </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6 pt-0">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100 text-sm font-medium">REGISTERED</p>
+                    <p className="text-4xl font-bold">{officers.length}</p>
+                  </div>
+                  <div className="bg-white/20 p-4 rounded-full backdrop-blur-sm">
+                    <Users className="w-8 h-8" />
+                  </div>
+                </div>
+              </CardContent>
+           </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -473,61 +625,118 @@ function App() {
             {/* Add Officer Card */}
             <Card className="border-2 border-blue-200/50 shadow-2xl bg-white/80 backdrop-blur-xl hover:shadow-3xl transition-all duration-300">
               <CardHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50 py-3 backdrop-blur-sm">
-                <CardTitle className="flex items-center gap-2 text-blue-900 text-base">
-                  <UserPlus className="w-4 h-4" />
-                  Register New Officer
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-blue-900 text-base">
+                    <UserPlus className="w-4 h-4" />
+                    Register New Officer
+                  </CardTitle>
+                  {isAuthenticated && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleLogout}
+                      className="bg-red-50 hover:bg-red-100 text-red-600 border-red-200 h-8 px-3 text-xs font-semibold"
+                      title="Logout"
+                    >
+                      <LogOut className="w-3 h-3 mr-1" />
+                      Logout
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="p-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium text-gray-700">Full Name *</label>
-                    <Input
-                      placeholder="Enter name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="border-blue-200 h-9 text-sm"
-                    />
+                {!isAuthenticated ? (
+                  <div className="text-center space-y-4 py-4">
+                    <div className="flex justify-center mb-3">
+                      <div className="bg-blue-100 p-3 rounded-full">
+                        <Lock className="w-6 h-6 text-blue-600" />
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-600 mb-4">
+                      Enter password to access officer registration
+                    </div>
+                     <div className="flex gap-2 justify-center">
+                       <div className="relative">
+                         <Input
+                           type={showPassword ? "text" : "password"}
+                           placeholder="Enter password"
+                           value={passwordInput}
+                           onChange={(e) => setPasswordInput(e.target.value)}
+                           onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+                           className="border-blue-200 h-9 text-sm w-48 pr-10"
+                         />
+                         <Button
+                           type="button"
+                           variant="ghost"
+                           size="sm"
+                           onClick={() => setShowPassword(!showPassword)}
+                           className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                         >
+                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                         </Button>
+                       </div>
+                       <Button
+                         onClick={handlePasswordSubmit}
+                         size="sm"
+                         className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 border-0 rounded-lg px-4 py-2"
+                       >
+                         Access
+                       </Button>
+                     </div>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium text-gray-700">Rank *</label>
-                    <Input
-                      placeholder="e.g., PO1"
-                      value={rank}
-                      onChange={(e) => setRank(e.target.value)}
-                      className="border-blue-200 h-9 text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium text-gray-700">Badge #</label>
-                    <Input
-                      placeholder="e.g., 12345"
-                      value={badgeNumber}
-                      onChange={(e) => setBadgeNumber(e.target.value)}
-                      className="border-blue-200 h-9 text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium text-gray-700">Unit</label>
-                    <Input
-                      placeholder="e.g., Station 1"
-                      value={unit}
-                      onChange={(e) => setUnit(e.target.value)}
-                      className="border-blue-200 h-9 text-sm"
-                    />
-                  </div>
-                </div>
-                <div className="mt-3 flex justify-end">
-                  <Button
-                    onClick={handleAddOfficer}
-                    size="sm"
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 border-0 rounded-lg px-4 py-2"
-                    disabled={loading}
-                  >
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Register
-                  </Button>
-                </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700">Full Name *</label>
+                        <Input
+                          placeholder="Enter name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="border-blue-200 h-9 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700">Rank *</label>
+                        <Input
+                          placeholder="e.g., PO1"
+                          value={rank}
+                          onChange={(e) => setRank(e.target.value)}
+                          className="border-blue-200 h-9 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700">Badge #</label>
+                        <Input
+                          placeholder="e.g., 12345"
+                          value={badgeNumber}
+                          onChange={(e) => setBadgeNumber(e.target.value)}
+                          className="border-blue-200 h-9 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700">Unit</label>
+                        <Input
+                          placeholder="e.g., Station 1"
+                          value={unit}
+                          onChange={(e) => setUnit(e.target.value)}
+                          className="border-blue-200 h-9 text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-3 flex justify-end">
+                      <Button
+                        onClick={handleAddOfficer}
+                        size="sm"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform transition-all duration-300 border-0 rounded-lg px-4 py-2"
+                        disabled={loading}
+                      >
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Register
+                      </Button>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
