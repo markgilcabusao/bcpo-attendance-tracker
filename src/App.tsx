@@ -522,7 +522,7 @@ function App() {
 
       {/* Header */}
       <header className="relative w-full overflow-hidden shadow-lg bg-blue-900">
-      {/* 1. The Building Background - Reduced width to 40% of the header */}
+      {/* 1. The Building Background - Reduced width to 30% of the header */}
         <div 
            className="absolute right-0 top-0 h-full w-[30%] z-0 bg-no-repeat bg-cover bg-right opacity-80"
            style={{ backgroundImage: "url('/screenshots/2d5b1f5a-4211-4f1e-b114-bb9fa943f1c0-removebg-preview.png')",}} />
@@ -552,6 +552,26 @@ function App() {
 
       <main className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
         {/* Stats Cards */}
+        <Card className="border-2 border-blue-200/50 shadow-2xl bg-white/80 backdrop-blur-xl hover:shadow-3xl transition-all duration-300 mb-6">
+          <CardHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50 py-3 backdrop-blur-sm">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg md:text-xl font-bold text-blue-900">
+                OFFICERS SUMMARY
+              </h2>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={exportToExcel}
+                className="inline-flex items-center gap-2 bg-green-500 text-white hover:bg-green-600 border-transparent shadow-lg shadow-green-200/50 transition-all duration-300"
+                title="Download Excel"
+              >
+                <Download className="w-4 h-4" />
+                Download Excel
+              </Button>
+            </div>
+          </CardHeader>
+        </Card>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">
             <CardContent className="p-6 flex items-center justify-between">
@@ -575,37 +595,17 @@ function App() {
               </div>
             </CardContent>
           </Card>
-            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">
-              <CardHeader className="py-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Users className="w-4 h-4" />
-                    TOTAL OFFICERS
-                  </CardTitle>
-                  <Button
-                   size="sm"
-                   variant="outline"
-                   onClick={exportToExcel}
-                   className="bg-green-500 hover:bg-green-600 text-white border-green-500 h-8 px-3 text-xs font-semibold shadow-lg hover:shadow-xl backdrop-blur-sm"
-                   title="Export officers to Excel"
-                 >
-                   <Download className="w-3 h-3 mr-1" />
-                   Download Excel
-                 </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6 pt-0">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-100 text-sm font-medium">REGISTERED</p>
-                    <p className="text-4xl font-bold">{officers.length}</p>
-                  </div>
-                  <div className="bg-white/20 p-4 rounded-full backdrop-blur-sm">
-                    <Users className="w-8 h-8" />
-                  </div>
-                </div>
-              </CardContent>
-           </Card>
+          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-blue-100 text-sm font-medium">TOTAL OFFICERS</p>
+                <p className="text-4xl font-bold">{officers.length}</p>
+              </div>
+              <div className="bg-white/20 p-4 rounded-full backdrop-blur-sm">
+                <Users className="w-8 h-8" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
