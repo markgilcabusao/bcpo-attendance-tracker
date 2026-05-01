@@ -41,6 +41,8 @@ import {
   LogOut,
   Eye,
   EyeOff,
+  Sun,
+  Moon,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Toaster } from '@/components/ui/sonner'
@@ -127,10 +129,26 @@ function App() {
   const [scheduleTime, setScheduleTime] = useState<string>('08:00')
   const [isSchedulePopoverOpen, setIsSchedulePopoverOpen] = useState(false)
 
+  // Theme state
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
   // Refresh data when component mounts
   useEffect(() => {
     refreshData()
   }, [refreshData])
+
+  // Handle theme toggle
+  const handleThemeChange = (newTheme: 'light' | 'dark') => {
+    setTheme(newTheme)
+    
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark')
+      toast.success('Dark mode enabled')
+    } else {
+      document.documentElement.classList.remove('dark')
+      toast.success('Light mode enabled')
+    }
+  }
 
   // Handle password authentication
   const handlePasswordSubmit = () => {
@@ -517,11 +535,11 @@ function App() {
    }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className={`min-h-screen relative overflow-hidden ${theme === 'dark' ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Toaster position="top-right" richColors />
 
       {/* Header */}
-      <header className="relative w-full overflow-hidden shadow-lg bg-blue-900">
+      <header className={`relative w-full overflow-hidden shadow-lg ${theme === 'dark' ? 'bg-slate-900' : 'bg-blue-900'}`}>
       {/* 1. The Building Background - Reduced width to 30% of the header */}
         <div 
            className="absolute right-0 top-0 h-full w-[30%] z-0 bg-no-repeat bg-cover bg-right opacity-80"
@@ -550,24 +568,64 @@ function App() {
         </div>
     </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
+      <main className={`container mx-auto px-4 py-8 max-w-7xl relative z-10 ${theme === 'dark' ? 'dark' : ''}`}>
         {/* Stats Cards */}
-        <Card className="border-2 border-blue-200/50 shadow-2xl bg-white/80 backdrop-blur-xl hover:shadow-3xl transition-all duration-300 mb-6">
-          <CardHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50 py-3 backdrop-blur-sm">
+        <Card className={`border-2 shadow-2xl backdrop-blur-xl hover:shadow-3xl transition-all duration-300 mb-6 ${
+          theme === 'dark'
+            ? 'border-black/80 bg-slate-950/90'
+            : 'border-blue-200/50 bg-white/80'
+        }`}>
+          <CardHeader className={`border-b py-3 backdrop-blur-sm ${
+            theme === 'dark'
+              ? 'bg-gradient-to-r from-slate-950 to-slate-900 border-black/60'
+              : 'bg-gradient-to-r from-blue-50/80 to-white/80 border-blue-200/50'
+          }`}>
             <div className="flex items-center justify-between">
-              <h2 className="text-lg md:text-xl font-bold text-blue-900">
+              <h2 className={`text-lg md:text-xl font-bold ${
+                theme === 'dark' ? 'text-white' : 'text-blue-900'
+              }`}>
                 OFFICERS SUMMARY
               </h2>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={exportToExcel}
-                className="inline-flex items-center gap-2 bg-green-500 text-white hover:bg-green-600 border-transparent shadow-lg shadow-green-200/50 transition-all duration-300"
-                title="Download Excel"
-              >
-                <Download className="w-4 h-4" />
-                Download Excel
-              </Button>
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1 bg-gray-200 rounded-lg p-1">
+                  <Button
+                    size="sm"
+                    onClick={() => handleThemeChange('light')}
+                    className={`inline-flex items-center gap-1 px-3 transition-all ${
+                      theme === 'light'
+                        ? 'bg-white text-amber-500 shadow-md'
+                        : 'bg-transparent text-gray-600 hover:bg-gray-100'
+                    }`}
+                    title="Light mode"
+                  >
+                    <Sun className="w-4 h-4" />
+                    Day
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => handleThemeChange('dark')}
+                    className={`inline-flex items-center gap-1 px-3 transition-all ${
+                      theme === 'dark'
+                        ? 'bg-slate-800 text-yellow-300 shadow-md'
+                        : 'bg-transparent text-gray-600 hover:bg-gray-100'
+                    }`}
+                    title="Dark mode"
+                  >
+                    <Moon className="w-4 h-4" />
+                    Night
+                  </Button>
+                </div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={exportToExcel}
+                  className="inline-flex items-center gap-2 bg-green-500 text-white hover:bg-green-600 border-transparent shadow-lg shadow-green-200/50 transition-all duration-300"
+                  title="Download Excel"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Excel
+                </Button>
+              </div>
             </div>
           </CardHeader>
         </Card>
@@ -613,20 +671,36 @@ function App() {
           <div className="space-y-6">
             {/* Search */}
             <div className="relative search-wrapper">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 search-icon transition-all duration-300" />
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 search-icon transition-all duration-300 ${
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              }`} />
               <Input
                 placeholder="Search officers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 border-2 border-gray-200 h-10 text-sm search-input focus:border-blue-500 focus:outline-none transition-all duration-300"
+                className={`pl-9 border-2 h-10 text-sm search-input focus:outline-none transition-all duration-300 ${
+                  theme === 'dark'
+                    ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-blue-400'
+                    : 'border-gray-200 focus:border-blue-500'
+                }`}
               />
             </div>
 
             {/* Add Officer Card */}
-            <Card className="border-2 border-blue-200/50 shadow-2xl bg-white/80 backdrop-blur-xl hover:shadow-3xl transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50 py-3 backdrop-blur-sm">
+            <Card className={`border-2 shadow-2xl backdrop-blur-xl hover:shadow-3xl transition-all duration-300 ${
+              theme === 'dark'
+                ? 'border-black/80 bg-slate-950/90'
+                : 'border-blue-200/50 bg-white/80'
+            }`}>
+              <CardHeader className={`py-3 backdrop-blur-sm ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-r from-slate-950 to-slate-900 border-b border-black/60'
+                  : 'bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50'
+              }`}>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-blue-900 text-base">
+                  <CardTitle className={`flex items-center gap-2 text-base ${
+                    theme === 'dark' ? 'text-white' : 'text-blue-900'
+                  }`}>
                     <UserPlus className="w-4 h-4" />
                     Register New Officer
                   </CardTitle>
@@ -644,15 +718,21 @@ function App() {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="p-4">
+              <CardContent className={`p-4 ${theme === 'dark' ? 'bg-slate-800' : 'bg-white'}`}>
                 {!isAuthenticated ? (
                   <div className="text-center space-y-4 py-4">
                     <div className="flex justify-center mb-3">
-                      <div className="bg-blue-100 p-3 rounded-full">
-                        <Lock className="w-6 h-6 text-blue-600" />
+                      <div className={`p-3 rounded-full ${
+                        theme === 'dark' ? 'bg-slate-700' : 'bg-blue-100'
+                      }`}>
+                        <Lock className={`w-6 h-6 ${
+                          theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+                        }`} />
                       </div>
                     </div>
-                    <div className="text-sm text-gray-600 mb-4">
+                    <div className={`text-sm mb-4 ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                    }`}>
                       Enter password to access officer registration
                     </div>
                      <div className="flex gap-2 justify-center">
@@ -663,7 +743,11 @@ function App() {
                            value={passwordInput}
                            onChange={(e) => setPasswordInput(e.target.value)}
                            onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-                           className="border-blue-200 h-9 text-sm w-48 pr-10"
+                           className={`h-9 text-sm w-48 pr-10 ${
+                             theme === 'dark'
+                               ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400'
+                               : 'border-blue-200'
+                           }`}
                          />
                          <Button
                            type="button"
@@ -688,39 +772,63 @@ function App() {
                   <>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-xs font-medium text-gray-700">Full Name *</label>
+                        <label className={`text-xs font-medium ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}>Full Name *</label>
                         <Input
                           placeholder="Enter name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          className="border-blue-200 h-9 text-sm"
+                          className={`h-9 text-sm ${
+                            theme === 'dark'
+                              ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400'
+                              : 'border-blue-200'
+                          }`}
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-medium text-gray-700">Rank *</label>
+                        <label className={`text-xs font-medium ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}>Rank *</label>
                         <Input
                           placeholder="e.g., PO1"
                           value={rank}
                           onChange={(e) => setRank(e.target.value)}
-                          className="border-blue-200 h-9 text-sm"
+                          className={`h-9 text-sm ${
+                            theme === 'dark'
+                              ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400'
+                              : 'border-blue-200'
+                          }`}
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-medium text-gray-700">Badge #</label>
+                        <label className={`text-xs font-medium ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}>Badge #</label>
                         <Input
                           placeholder="e.g., 12345"
                           value={badgeNumber}
                           onChange={(e) => setBadgeNumber(e.target.value)}
-                          className="border-blue-200 h-9 text-sm"
+                          className={`h-9 text-sm ${
+                            theme === 'dark'
+                              ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400'
+                              : 'border-blue-200'
+                          }`}
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-medium text-gray-700">Unit</label>
+                        <label className={`text-xs font-medium ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        }`}>Unit</label>
                         <Input
                           placeholder="e.g., Station 1"
                           value={unit}
                           onChange={(e) => setUnit(e.target.value)}
-                          className="border-blue-200 h-9 text-sm"
+                          className={`h-9 text-sm ${
+                            theme === 'dark'
+                              ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400'
+                              : 'border-blue-200'
+                          }`}
                         />
                       </div>
                     </div>
@@ -741,9 +849,19 @@ function App() {
             </Card>
 
             {/* Officer List */}
-            <Card className="border-2 border-blue-200/50 shadow-2xl bg-white/80 backdrop-blur-xl hover:shadow-3xl transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50 py-3 backdrop-blur-sm">
-                <CardTitle className="flex items-center gap-2 text-blue-900 text-base">
+            <Card className={`border-2 shadow-2xl backdrop-blur-xl hover:shadow-3xl transition-all duration-300 ${
+              theme === 'dark'
+                ? 'border-black/80 bg-slate-950/90'
+                : 'border-blue-200/50 bg-white/80'
+            }`}>
+              <CardHeader className={`py-3 backdrop-blur-sm ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-r from-slate-950 to-slate-900 border-b border-black/60'
+                  : 'bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50'
+              }`}>
+                <CardTitle className={`flex items-center gap-2 text-base ${
+                  theme === 'dark' ? 'text-white' : 'text-blue-900'
+                }`}>
                   <Users className="w-4 h-4" />
                   Officers List
                   <Badge className="ml-2 text-xs bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-green-500/50 font-bold px-2.5 py-1 rounded-full">
@@ -762,14 +880,20 @@ function App() {
                   />
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-0 max-h-80 overflow-y-auto">
+              <CardContent className={`p-0 max-h-80 overflow-y-auto ${
+                theme === 'dark' ? 'bg-slate-800 divide-slate-700' : 'bg-white divide-gray-100'
+              }`}>
                 {filteredOfficers.length === 0 ? (
-                  <div className="p-6 text-center text-gray-500">
-                    <Users className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                  <div className={`p-6 text-center ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
+                    <Users className={`w-10 h-10 mx-auto mb-2 ${
+                      theme === 'dark' ? 'text-gray-600' : 'text-gray-300'
+                    }`} />
                     <p className="text-sm">No officers registered</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-100">
+                  <div className={`divide-y ${theme === 'dark' ? 'divide-slate-700' : 'divide-gray-100'}`}>
                     {filteredOfficers.map((officer) => (
                       <div key={officer.id} className="p-3 hover:bg-gray-50">
                         <div className="flex items-center justify-between">
@@ -851,9 +975,19 @@ function App() {
           {/* Right Column - Calendar & Scheduled Tasks */}
           <div className="space-y-6">
             {/* Duty Calendar with Scheduled Off-Duty */}
-            <Card className="border-2 border-blue-200/50 shadow-2xl bg-white/80 backdrop-blur-xl hover:shadow-3xl transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50 backdrop-blur-sm">
-                <CardTitle className="flex items-center justify-between text-blue-900">
+            <Card className={`border-2 shadow-2xl backdrop-blur-xl hover:shadow-3xl transition-all duration-300 ${
+              theme === 'dark'
+                ? 'border-black/80 bg-slate-950/90'
+                : 'border-blue-200/50 bg-white/80'
+            }`}>
+              <CardHeader className={`backdrop-blur-sm ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-r from-slate-950 to-slate-900 border-b border-black/60'
+                  : 'bg-gradient-to-r from-blue-50/80 to-white/80 border-b border-blue-200/50'
+              }`}>
+                <CardTitle className={`flex items-center justify-between ${
+                  theme === 'dark' ? 'text-white' : 'text-blue-900'
+                }`}>
                   <div className="flex items-center gap-2">
                     <CalendarDays className="w-5 h-5" />
                     Duty Calendar
@@ -883,7 +1017,9 @@ function App() {
                             </div>
 
                             <div className="space-y-2">
-                              <label className="text-xs font-medium text-gray-700">
+                              <label className={`text-xs font-medium ${
+                                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
                                 Select Time (Default: 8:00 AM)
                               </label>
                               <Select value={scheduleTime} onValueChange={setScheduleTime}>
@@ -927,11 +1063,19 @@ function App() {
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6 bg-gradient-to-br from-blue-50/60 via-white/80 to-blue-50/40 relative overflow-hidden calendar-content">
+              <CardContent className={`p-6 relative overflow-hidden calendar-content ${
+                theme === 'dark'
+                  ? 'bg-slate-800'
+                  : 'bg-gradient-to-br from-blue-50/60 via-white/80 to-blue-50/40'
+              }`}>
                 {/* Animated backdrop gradient elements */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-200/10 to-transparent rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-blue-200/5 to-transparent rounded-full blur-3xl -ml-40 -mb-40 pointer-events-none"></div>
-                <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, #3b82f6 1px, transparent 1px)', backgroundSize: '40px 40px'}}></div>
+                {theme === 'light' && (
+                  <>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-200/10 to-transparent rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-blue-200/5 to-transparent rounded-full blur-3xl -ml-40 -mb-40 pointer-events-none"></div>
+                    <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, #3b82f6 1px, transparent 1px)', backgroundSize: '40px 40px'}}></div>
+                  </>
+                )}
                 <div className="relative z-10">
                 {/* Calendar Header */}
                 <div className="flex items-center justify-center mb-4 relative">
@@ -1011,12 +1155,44 @@ function App() {
                         onClick={() => handleDateClick(day)}
                         className={`
                             aspect-square p-2 rounded-lg border transition-all hover:scale-105
-                            ${isSunday ? 'bg-white text-red-500 border-red-300/50' : (isCurrentMonth ? 'bg-white text-gray-900' : 'bg-gray-50 text-gray-400')}
-                            ${isToday ? 'ring-2 ring-blue-500 border-blue-500' : isSunday ? 'border-red-300/30' : 'border-gray-200'}
-                            ${hasOfficers ? 'hover:bg-green-100 hover:border-green-300' : isSunday ? 'hover:bg-red-50 hover:border-red-300' : 'hover:bg-blue-50 hover:border-blue-300'}
+                            ${theme === 'dark'
+                              ? isSunday
+                                ? 'bg-slate-950 text-red-400 border-red-800/70'
+                                : isCurrentMonth
+                                  ? 'bg-slate-950 text-white border-slate-800'
+                                  : 'bg-slate-900 text-slate-500 border-slate-700'
+                              : isSunday
+                                ? 'bg-white text-red-500 border-red-300/50'
+                                : isCurrentMonth
+                                  ? 'bg-white text-gray-900 border-gray-200'
+                                  : 'bg-gray-50 text-gray-400 border-gray-200'}
+                            ${isToday
+                              ? theme === 'dark'
+                                ? 'ring-2 ring-sky-400 border-sky-400'
+                                : 'ring-2 ring-blue-500 border-blue-500'
+                              : ''}
+                            ${hasOfficers
+                              ? theme === 'dark'
+                                ? 'hover:bg-emerald-900 hover:border-emerald-700'
+                                : 'hover:bg-green-100 hover:border-green-300'
+                              : isSunday
+                                ? theme === 'dark'
+                                  ? 'hover:bg-slate-900 hover:border-red-600'
+                                  : 'hover:bg-red-50 hover:border-red-300'
+                                : theme === 'dark'
+                                  ? 'hover:bg-slate-900 hover:border-slate-700'
+                                  : 'hover:bg-blue-50 hover:border-blue-300'}
                           `}
                       >
-                        <div className={`text-sm font-medium ${isSunday ? 'text-red-600 font-bold' : 'text-gray-900'}`}>{format(day, 'd')}</div>
+                        <div className={`text-sm font-medium ${
+                          theme === 'dark'
+                            ? isSunday
+                              ? 'text-red-300 font-bold'
+                              : 'text-white'
+                            : isSunday
+                              ? 'text-red-600 font-bold'
+                              : 'text-gray-900'
+                        }`}>{format(day, 'd')}</div>
                         {hasOfficers && (
                           <div className="mt-1">
                             <Badge className="bg-green-500 text-white text-xs px-1.5 py-0">
